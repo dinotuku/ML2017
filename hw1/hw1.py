@@ -99,7 +99,7 @@ def linear_regression(x, y, vx, vy):
   lr = 0.01
   batch = 100
   print_every = 10
-  iteration = 500
+  iteration = 1000
 
   w = np.random.rand(fNum, x.shape[2]) / x.shape[0] / x.shape[1]
   b = 0

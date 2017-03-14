@@ -10,10 +10,10 @@ test_X.csv：從剩下的10天資料中取樣出連續的10小時為一筆，前
 
 ###Train linear regression model
 ```
-./hw1.sh ./data/train.csv ./data/test_X.csv ./result/res.csv
+bash hw1.sh [input file 1] [input file 2] [output file]
 ```
 
 ###Use the best model
 ```
-./hw1_best.sh ./data/train.csv ./data/test_X.csv ./result/res.csv
+bash hw1_best.sh [input file 1] [input file 2] [output file]
 ```
