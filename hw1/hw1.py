@@ -7,8 +7,11 @@ train_data_name = sys.argv[1]
 test_data_name = sys.argv[2]
 output_name = sys.argv[3]
 
-feat_list = [5, 6, 9]
+# feat_list = [2, 7, 9, 15, 16]
+feat_list = [2, 6, 7, 9, 12]
+# feat_list = [9]
 
+np.random.seed(0)
 pd.options.mode.chained_assignment = None
 
 
@@ -75,17 +78,51 @@ def process_training_data(data):
   train_x = np.array(train_x)
   train_y = np.array(train_y)
 
-  # add sqaured data
-  # train_x_2_3 = np.append(train_x ** 2, train_x ** 3, axis=1)
-  # train_x_2_3_4 = np.append(train_x_2_3, train_x ** 4, axis=1)
-  # train_x = np.append(train_x, train_x ** 2, axis=1)
+  train_x, m, d = normalize(train_x)
+  train_x = powering(train_x, power)
 
+  train_size = 5400
   indices = np.random.permutation(train_x.shape[0])
-  tra_id, val_id = indices[:5000], indices[5000:]
+  tra_id, val_id = indices[:train_size], indices[train_size:int(train_size * 1.2)]
   tra_x, val_x = train_x[tra_id], train_x[val_id]
   tra_y, val_y = train_y[tra_id], train_y[val_id]
 
-  return tra_x, tra_y, val_x, val_y
+  return tra_x, tra_y, val_x, val_y, m, d
+
+
+def powering(x, p):
+
+  tmp = x
+
+  for i in range(2, p + 1):
+
+    x = np.append(x, tmp ** i, axis=1)
+
+  return x
+
+
+def normalize(x):
+
+  m = np.zeros((x.shape[1], x.shape[2]))
+  d = np.zeros((x.shape[1], x.shape[2]))
+
+  for i in range(x.shape[0]):
+
+    m += x[i]
+
+  m /= float(x.shape[0])
+
+  for i in range(x.shape[0]):
+
+    d += (x[i] - m) ** 2
+
+  d = np.sqrt(d / float(x.shape[0]))
+
+  for i in range(x.shape[0]):
+
+    x[i] = (x[i] - m) / d
+
+  return x, m, d
 
 
 def cal_rmse(x, w, b, y):
@@ -93,19 +130,24 @@ def cal_rmse(x, w, b, y):
   return np.sqrt(((y - b - (x*w).sum(axis=1).sum(axis=1)) ** 2).sum() / len(y))
 
 
-def linear_regression(x, y, vx, vy):
+power = 2
 
-  fNum = len(feat_list)
-  lr = 0.01
-  batch = 100
+
+def linear_regression(x, y, vx, vy, m, d):
+
+  fNum = x.shape[1]
+  lr = 0.04
+  batch = x.shape[0] * 0.02
   print_every = 10
+  save_every = 100
   iteration = 1000
 
-  w = np.random.rand(fNum, x.shape[2]) / x.shape[0] / x.shape[1]
+  w = np.random.rand(x.shape[1], x.shape[2])
   b = 0
 
   b_lr = 0.0
   w_lr = np.zeros((fNum, x.shape[2]))
+  lamb = 0.0001
 
   b_history = np.array(b)
   w_history = np.array(w)
@@ -129,16 +171,37 @@ def linear_regression(x, y, vx, vy):
 
       else:
 
+        b_grad = b_grad - 2.0*(y[n] - b - (w*x[n]).sum())
+        w_grad = w_grad - 2.0*(y[n] - b - (w*x[n]).sum())*x[n]
+        # adagrad
         b_lr += b_grad ** 2
         w_lr += w_grad ** 2
         b = b - lr/np.sqrt(b_lr / (i+1)) * b_grad
-        w = w - lr/np.sqrt(w_lr / (i+1)) * w_grad
+        # w = w - lr/np.sqrt(w_lr / (i+1)) * w_grad
+        w = w - lr/np.sqrt(w_lr / (i+1)) * (w_grad + 2.0 * lamb * w)
         b_grad = 0.0
         w_grad = np.zeros((fNum, x.shape[2]))
         batchNum = 0
         b_history = np.append(b_history, b)
         w_history = np.append(w_history, w)
-        
+    
+    for n in range(x.shape[0]):
+
+      b_grad = b_grad - 2.0*(y[n] - b - (w*x[n]).sum())
+      w_grad = w_grad - 2.0*(y[n] - b - (w*x[n]).sum())*x[n]
+
+    # adagrad
+    b_lr += b_grad ** 2
+    w_lr += w_grad ** 2
+    b = b - lr/np.sqrt(b_lr / (i+1)) * b_grad
+    # w = w - lr/np.sqrt(w_lr / (i+1)) * w_grad
+    w = w - lr/np.sqrt(w_lr / (i+1)) * (w_grad + 2.0 * lamb * w)
+    b_grad = 0.0
+    w_grad = np.zeros((fNum, x.shape[2]))
+    batchNum = 0
+    b_history = np.append(b_history, b)
+    w_history = np.append(w_history, w)
+    
     trmse = cal_rmse(x, w, b, y)
     vrmse = cal_rmse(vx, w, b, vy)
 
@@ -146,7 +209,14 @@ def linear_regression(x, y, vx, vy):
 
       print('Iteration: %d, TRMSE: %.4f, VRMSE: %.4f' % (i, trmse, vrmse))
 
+    if i % save_every == 0:
+
+      print('Saving model')
+      model = [w, b, m, d]
+      np.save('./model/model_' + str(i), model)
+
   return w, b
+
 
 def read_testing_data(name):
 
@@ -183,7 +253,7 @@ def read_testing_data(name):
   return data
 
 
-def process_testing_data(data):
+def process_testing_data(data, m, d):
 
   test_x = []
 
@@ -201,10 +271,11 @@ def process_testing_data(data):
 
   test_x = np.array(test_x)
 
-  # add sqaured data
-  # train_x_2_3 = np.append(train_x ** 2, train_x ** 3, axis=1)
-  # train_x_2_3_4 = np.append(train_x_2_3, train_x ** 4, axis=1)
-  # train_x = np.append(train_x, train_x ** 2, axis=1)
+  for i in range(test_x.shape[0]):
+
+    test_x[i] = (test_x[i] - m) / d
+
+  test_x = powering(test_x, power)
 
   return test_x
 
@@ -236,10 +307,8 @@ def output_result(y, name):
     file.write('id_%d,%d\n' % (i, y[i]))
 
 
-def use_saved_model(x):
+def use_saved_model(x, w, b):
 
-  w = np.load('./best_model/weight.npy')
-  b = np.load('./best_model/bias.npy')
   y = use_model(x, w, b)
   output_result(y, output_name)
 
@@ -249,20 +318,27 @@ def main():
   if (len(sys.argv) == 5):
 
     test_data = read_testing_data(test_data_name)
-    test_x = process_testing_data(test_data)
-    use_saved_model(test_x)
+    # mod = np.load('./best_model/model.npy')
+    mod = np.load('./model/model_' + sys.argv[4] + '.npy')
+    weight = mod[0]
+    bias = mod[1]
+    mean = mod[2]
+    devi = mod[3]
+    test_x = process_testing_data(test_data, mean, devi)
+    use_saved_model(test_x, weight, bias)
+
     return
 
   train_data = read_training_data(train_data_name)
-  train_x, train_y, val_x, val_y = process_training_data(train_data)
-  weight, bias = linear_regression(train_x, train_y, val_x, val_y)
+  train_x, train_y, val_x, val_y, mean, devi = process_training_data(train_data)
+  weight, bias = linear_regression(train_x, train_y, val_x, val_y, mean, devi)
 
-  print('Saving model')
-  np.save('weight', weight)
-  np.save('bias', bias)
+  print('Saving final model')
+  model = [weight, bias, mean, devi]
+  np.save('model', model)
 
   test_data = read_testing_data(test_data_name)
-  test_x = process_testing_data(test_data)
+  test_x = process_testing_data(test_data, mean, devi)
   test_y = use_model(test_x, weight, bias)
 
   output_result(test_y, output_name)
