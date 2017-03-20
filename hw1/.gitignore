@@ -15,6 +15,5 @@ model/model_600.npy
 model/model_700.npy
 model/model_800.npy
 model/model_900.npy
-model/model_base.npy
 result/
 README.md
