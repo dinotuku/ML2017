@@ -140,14 +140,14 @@ def linear_regression(x, y, vx, vy, m, d):
   batch = x.shape[0] * 0.02
   print_every = 10
   save_every = 100
-  iteration = 1000
+  iteration = 800
 
   w = np.random.rand(x.shape[1], x.shape[2])
   b = 0
 
   b_lr = 0.0
   w_lr = np.zeros((fNum, x.shape[2]))
-  lamb = 0.0001
+  lamb = 0.001
 
   b_history = np.array(b)
   w_history = np.array(w)
