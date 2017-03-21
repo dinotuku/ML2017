@@ -7,11 +7,7 @@ train_data_name = sys.argv[1]
 test_data_name = sys.argv[2]
 output_name = sys.argv[3]
 
-# feat_list = [2, 7, 9, 15, 16]
-feat_list = [2, 6, 7, 9, 12]
-# feat_list = [9]
-
-np.random.seed(0)
+# np.random.seed(0)
 pd.options.mode.chained_assignment = None
 
 
@@ -58,7 +54,7 @@ def process_training_data(data):
   train_x = []
   train_y = []
 
-  for i in range(1, 13):
+  for i in range(1, 7):
 
     X = data[str(i).zfill(2)].values
 
@@ -81,7 +77,7 @@ def process_training_data(data):
   train_x, m, d = normalize(train_x)
   train_x = powering(train_x, power)
 
-  train_size = 5400
+  train_size = 2700
   indices = np.random.permutation(train_x.shape[0])
   tra_id, val_id = indices[:train_size], indices[train_size:int(train_size * 1.2)]
   tra_x, val_x = train_x[tra_id], train_x[val_id]
@@ -140,7 +136,7 @@ def linear_regression(x, y, vx, vy, m, d):
   batch = x.shape[0] * 0.02
   print_every = 10
   save_every = 100
-  iteration = 800
+  iteration = 2000
 
   w = np.random.rand(x.shape[1], x.shape[2])
   b = 0
@@ -253,7 +249,7 @@ def read_testing_data(name):
   return data
 
 
-def process_testing_data(data, m, d):
+def process_testing_data(data, m, d, fl):
 
   test_x = []
 
@@ -263,7 +259,7 @@ def process_testing_data(data, m, d):
 
     tmp_x = []
 
-    for j in feat_list:
+    for j in fl:
 
       tmp_x.append(X[j][0:9])
 
@@ -318,18 +314,24 @@ def main():
   if (len(sys.argv) == 5):
 
     test_data = read_testing_data(test_data_name)
-    # mod = np.load('./best_model/model.npy')
     mod = np.load('./model/model_' + sys.argv[4] + '.npy')
     weight = mod[0]
     bias = mod[1]
     mean = mod[2]
     devi = mod[3]
-    test_x = process_testing_data(test_data, mean, devi)
+    if (sys.argv[4] == 'best'):
+      feat_list = [2, 7, 9, 15, 16]
+    elif (sys.argv[4] == 'base'):
+      feat_list = [2, 6, 7, 9, 12]
+    test_x = process_testing_data(test_data, mean, devi, feat_list)
     use_saved_model(test_x, weight, bias)
 
     return
 
   train_data = read_training_data(train_data_name)
+  # feat_list = [2, 7, 9, 15, 16]
+  # feat_list = [2, 6, 7, 9, 12]
+  feat_list = [9]
   train_x, train_y, val_x, val_y, mean, devi = process_training_data(train_data)
   weight, bias = linear_regression(train_x, train_y, val_x, val_y, mean, devi)
 
