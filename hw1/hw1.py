@@ -1,11 +1,8 @@
 # -*- coding: utf8 -*-
+# Usage: python hw1.py <Training file> <Testing file> <Output file> [Model name]
 import sys, os
 import numpy as np
 import pandas as pd
-
-train_data_name = sys.argv[1]
-test_data_name = sys.argv[2]
-output_name = sys.argv[3]
 
 np.random.seed(0)
 pd.options.mode.chained_assignment = None
@@ -77,7 +74,8 @@ def process_training_data(data, fl, p):
   train_x, m, d = normalize(train_x)
   train_x = powering(train_x, p)
 
-  train_size = 2700
+  train_size = int(train_x.shape[0] * 75 / 157)
+  # train_size = int(train_x.shape[0] * 0.48)
   indices = np.random.permutation(train_x.shape[0])
   tra_id, val_id = indices[:train_size], indices[train_size:int(train_size * 1.2)]
   tra_x, val_x = train_x[tra_id], train_x[val_id]
@@ -202,7 +200,7 @@ def linear_regression(x, y, vx, vy, m, d, fl, p):
     if i % print_every == 0:
 
       print('Iteration: %d, TRMSE: %.4f, VRMSE: %.4f' % (i, trmse, vrmse))
-        
+
     if i % save_every == 0:
 
       print('Saving model')
@@ -301,13 +299,23 @@ def output_result(y, name):
     file.write('id_%d,%d\n' % (i, y[i]))
 
 
-def use_saved_model(x, w, b):
+def use_saved_model(x, w, b, name):
 
   y = use_model(x, w, b)
-  output_result(y, output_name)
+  output_result(y, name)
 
 
 def main():
+
+  if (len(sys.argv) < 4):
+
+    print('Not enough arguments')
+
+    return
+
+  train_data_name = sys.argv[1]
+  test_data_name = sys.argv[2]
+  output_name = sys.argv[3]
 
   if (len(sys.argv) == 5):
 
@@ -320,7 +328,7 @@ def main():
     feat_list = mod[4]
     power = mod[5]
     test_x = process_testing_data(test_data, mean, devi, feat_list, power)
-    use_saved_model(test_x, weight, bias)
+    use_saved_model(test_x, weight, bias, output_name)
 
     return
 
