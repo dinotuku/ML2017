@@ -126,7 +126,7 @@ def cal_rmse(x, w, b, y):
 
 def linear_regression(x, y, vx, vy, m, d, fl, p):
 
-  lr = 0.04
+  lr = 0.5
   batch = x.shape[0] * 0.02
   print_every = 100
   save_every = 100
@@ -138,7 +138,7 @@ def linear_regression(x, y, vx, vy, m, d, fl, p):
   b_lr = 0.0
   w_lr = np.zeros((x.shape[1], x.shape[2]))
   lamb = 0.01
-  momen = 0.35
+  momen = 0.7
 
   delta_b = 0
   delta_w = np.zeros((x.shape[1], x.shape[2]))
@@ -168,8 +168,8 @@ def linear_regression(x, y, vx, vy, m, d, fl, p):
         # adagrad and momentum
         b_lr += b_grad ** 2
         w_lr += w_grad ** 2
-        delta_b = momen * delta_b + (1 - momen) * lr / np.sqrt(b_lr / (i+batchNum+1)) * b_grad
-        delta_w = momen * delta_w + (1 - momen) * lr / np.sqrt(w_lr / (i+batchNum+1)) * (w_grad + 2.0 * lamb * w)
+        delta_b = momen * delta_b + (1 - momen) * lr / np.sqrt(b_lr) * b_grad
+        delta_w = momen * delta_w + (1 - momen) * lr / np.sqrt(w_lr) * (w_grad + 2.0 * lamb * w)
         b = b - delta_b
         w = w - delta_w
 
@@ -185,8 +185,8 @@ def linear_regression(x, y, vx, vy, m, d, fl, p):
     # adagrad and momentum
     b_lr += b_grad ** 2
     w_lr += w_grad ** 2
-    delta_b = momen * delta_b + (1 - momen) * lr / np.sqrt(b_lr / (i+1)) * b_grad
-    delta_w = momen * delta_w + (1 - momen) * lr / np.sqrt(w_lr / (i+1)) * (w_grad + 2.0 * lamb * w)
+    delta_b = momen * delta_b + (1 - momen) * lr / np.sqrt(b_lr) * b_grad
+    delta_w = momen * delta_w + (1 - momen) * lr / np.sqrt(w_lr) * (w_grad + 2.0 * lamb * w)
     b = b - delta_b
     w = w - delta_w
 
