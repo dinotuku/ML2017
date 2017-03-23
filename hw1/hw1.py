@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # Usage: python hw1.py <Training file> <Testing file> <Output file> [Model name]
+
 import sys, os
 import numpy as np
 import pandas as pd
