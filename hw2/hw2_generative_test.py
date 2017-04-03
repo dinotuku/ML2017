@@ -1,15 +1,12 @@
 """
 Probability Generative Model for Binary Classification
-For testing
+Testing part
 """
 # -*- coding: utf8 -*-
 
 import sys
-import os
-import math
 import numpy as np
 from numpy.linalg import inv
-from numpy.linalg import det
 import pandas as pd
 
 np.random.seed(2)
@@ -17,47 +14,36 @@ np.random.seed(2)
 def read_test_data(x_name):
     """ Read testing data """
     print('Reading testing data')
-    
+
     x_pandf = pd.read_csv(x_name, header=None, skiprows=1)
 
     return x_pandf
 
 def process_test_data(x_df):
     """ Turn pandas dataframe into numpy array """
-    x_data = np.array(x_df)
+    x_data = np.array(x_df).astype(float)
 
     return x_data
-
-def pdf(data, mean, cov):
-    """ Calculate Gaussian PDF"""
-    prob = math.exp(-np.dot(np.dot((data - mean).transpose(), inv(cov)), (data - mean)) / 2) / \
-           math.pow(math.pi * 2, mean.shape[0] / 2) / math.sqrt(math.fabs(det(cov)))
-
-    return prob
 
 def use_saved_model(x_data):
     """ Use model to classify """
     mod = np.load('./model/generative_model.npy')
-    p_mean = mod[0]
-    n_mean = mod[1]
-    cov = mod[2]
-    p_per = mod[3]
-    n_per = mod[4]
+    p_mean, n_mean, cov = mod[0], mod[1], mod[2]
+    p_per, n_per = mod[3], mod[4]
+    mean, devi = mod[5], mod[6]
     res = np.array([])
 
     print('Using model')
     for i in range(x_data.shape[0]):
 
-        if pdf(x_data[i], p_mean, cov) != 0:
+        x_data[i] = (x_data[i] - mean) / devi
 
-            pos_prob = pdf(x_data[i], p_mean, cov) * p_per / \
-                       (pdf(x_data[i], p_mean, cov) * p_per + pdf(x_data[i], n_mean, cov) * n_per)
+        pos_tmp = -np.dot(np.dot((x_data[i] - p_mean).transpose(), inv(cov)), (x_data[i] - p_mean))
+        neg_tmp = -np.dot(np.dot((x_data[i] - n_mean).transpose(), inv(cov)), (x_data[i] - n_mean))
+        pos_prob = np.exp(pos_tmp * 0.5) * p_per
+        neg_prob = np.exp(neg_tmp * 0.5) * n_per
 
-        else:
-
-            pos_prob = 1.0
-
-        if pos_prob > 0.5:
+        if pos_prob > neg_prob:
 
             res = np.append(res, 1)
 
@@ -70,12 +56,12 @@ def use_saved_model(x_data):
 def save_result(res, name):
     """ Save testing result """
     print('Saving result')
-    file = open(name, 'w')
-    file.write('id,label\n')
+    out = open(name, 'w')
+    out.write('id,label\n')
 
-    for i in range(len(res)):
+    for ind, val in enumerate(res):
 
-        file.write('%d,%d\n' % (i + 1, res[i]))
+        out.write('%d,%d\n' % (ind + 1, val))
 
 def main():
     """ Main function """
