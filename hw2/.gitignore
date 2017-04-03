@@ -5,3 +5,8 @@ test.csv
 train.csv
 sample_submission.csv
 prediction.csv
+model/*
+!model/generative_model.npy
+!model/logistic_model_best1.npy
+!model/logistic_model_best2.npy
+report.pages
