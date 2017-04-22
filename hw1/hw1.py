@@ -321,7 +321,7 @@ def main():
   if (len(sys.argv) == 5):
 
     test_data = read_testing_data(test_data_name)
-    mod = np.load('./model/model_' + sys.argv[4] + '.npy')
+    mod = np.load('./model/model_' + sys.argv[4] + '.npy', encoding='bytes')
     weight = mod[0]
     bias = mod[1]
     mean = mod[2]
