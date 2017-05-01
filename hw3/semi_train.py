@@ -115,11 +115,8 @@ def main():
     # feats, labels = read_dataset(args.input)
     feats, labels = read_dataset('./data/train.csv')
     unlab_feats, unlab_labels = feats[:unlabel_nb], labels[:unlabel_nb]
-    tra_feats, tra_labels = feats[unlabel_nb:], labels[unlabel_nb:]
-    # val_feats = read_dataset('./data/valid_3.csv', False)
-    # val_labels = read_dataset('./data/valid_3.csv', True, True)
-    val_feats = read_dataset('./data/test.csv', False)
-    val_labels = read_dataset('./data/test_ans.csv', True, True)
+    tra_feats, tra_labels = feats[unlabel_nb:unlabel_nb+3000], labels[unlabel_nb:unlabel_nb+3000]
+    val_feats, val_labels = feats[unlabel_nb+3000:], labels[unlabel_nb+3000:]
 
     # Specify callbacks function
     history = model.History()

@@ -19,7 +19,7 @@ def main():
     """ Main function """
     # Handle options
     parser = argparse.ArgumentParser(prog='train.py', description='hw3 training script.')
-    parser.add_argument('--input', type=str, metavar='<input_file>', default='./data/train_3.csv')
+    parser.add_argument('--input', type=str, metavar='<input_file>', default='./data/train.csv')
     parser.add_argument('--model', type=str, default='easy',
                         choices=['easy', 'simple', 'strong', 'dnn'], metavar='<model>')
     parser.add_argument('--epoch', type=int, default=100, metavar='<#epoch>')
@@ -42,11 +42,8 @@ def main():
 
     # Read data
     tra_feats, tra_labels = read_dataset(args.input)
-    val_feats = read_dataset('./data/valid_3.csv', False)
-    val_labels = read_dataset('./data/valid_3.csv', True, True)
-    # tra_feats, tra_labels = read_dataset(args.input)
-    # val_feats = read_dataset('./data/test.csv', False)
-    # val_labels = read_dataset('./data/test_ans.csv', True, True)
+    val_feats = tra_feats[-5000:]
+    val_labels = tra_labels[-5000:]
 
     # Specify callbacks
     emotion_classifier = model.build_model(args.model, tra_labels.shape[1])
