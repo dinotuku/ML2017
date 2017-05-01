@@ -46,6 +46,10 @@ def main():
     test_feats = read_dataset(args.input, False)
 
     ans = emotion_classifier.predict_classes(test_feats, batch_size=args.batch)
+
+    if not os.path.exists(args.output):
+        os.makedirs(args.output)
+
     with open(args.output, 'w') as write_file:
         write_file.write("id,label\n")
         for idx, label in enumerate(ans):
