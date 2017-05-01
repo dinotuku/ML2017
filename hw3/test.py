@@ -47,25 +47,13 @@ def main():
 
     ans = emotion_classifier.predict_classes(test_feats, batch_size=args.batch)
 
-    if not os.path.exists(args.output):
-        os.makedirs(args.output)
+    if not os.path.exists(os.path.dirname(args.output)) and os.path.dirname(args.output):
+        os.makedirs(os.path.dirname(args.output))
 
     with open(args.output, 'w') as write_file:
         write_file.write("id,label\n")
         for idx, label in enumerate(ans):
             write_file.write("{},{}\n".format(idx, label))
-
-    ans_data = read_dataset('./data/test_ans.csv', True, True)
-    ans_data = argmax(ans_data, axis=1)
-
-    tmp = 0
-
-    for idx, label in enumerate(ans):
-        if label == ans_data[idx]:
-            tmp += 1
-
-    acc = float(tmp / ans_data.shape[0])
-    print('All test accuracy:', acc)
 
 if __name__ == "__main__":
 
