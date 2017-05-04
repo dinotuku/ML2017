@@ -41,9 +41,9 @@ def main():
             store_path = os.path.join(MODEL_DIR, log_path + str(dir_cnt))
 
     # Read data
-    tra_feats, tra_labels = read_dataset(args.input)
-    val_feats = tra_feats[-5000:]
-    val_labels = tra_labels[-5000:]
+    feats, labels = read_dataset(args.input)
+    tra_feats, tra_labels = feats[:-5000], labels[:-5000]
+    val_feats, val_labels = feats[-5000:], labels[-5000:]
 
     # Specify callbacks
     emotion_classifier = model.build_model(args.model, tra_labels.shape[1])
@@ -58,12 +58,11 @@ def main():
         print('Using ImageDataGenerator')
 
         datagen = ImageDataGenerator(
-            rotation_range=20,
-            width_shift_range=0.2,
-            height_shift_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True,
-            vertical_flip=True)
+            rotation_range=15,
+            width_shift_range=0.15,
+            height_shift_range=0.15,
+            zoom_range=0.15,
+            horizontal_flip=True)
 
         datagen.fit(tra_feats)
 
