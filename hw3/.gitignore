@@ -2,12 +2,16 @@ data/
 image/
 **/__pycache__
 
-model/dnn_epoch300_G_0/
-model/easy_epoch300_0/
-model/semi_epoch150_0/
-model/strong_epoch300_G_0/
+*.png
+*.hdf5
 
-model/strong_epoch0_G_0/*.hdf5
+model/dnn_epoch300_G_0/*
+model/easy_epoch300_0/*
+model/semi_epoch150_0/*
+model/strong_epoch300_G_0/*
+model/strong_epoch0_G_0/*
+
+!model/easy_epoch300_0/best_model.hdf5
 
 prediction.csv
 report.pages
