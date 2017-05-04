@@ -31,7 +31,7 @@ def grad_ascent(num_step, input_image_data, iter_func):
     """
     filter_images = []
     losses = 0
-    for placeholder in range(num_step):
+    for _ in range(num_step):
         loss_value, grads_value = iter_func([input_image_data, 1])
         input_image_data += grads_value * 1 # step size
         losses += loss_value
