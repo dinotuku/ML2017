@@ -12,6 +12,7 @@ model/strong_epoch300_G_0/*
 model/strong_epoch0_G_0/*
 
 !model/easy_epoch300_0/best_model.hdf5
+!model/strong_epoch0_G_0/best_model.hdf5.tar.*
 
 prediction.csv
 report.pages
