@@ -41,8 +41,8 @@ def generate_data(dim, layer_dims, num):
 
 def get_eigenvalues(data):
     """ Generate average eigenvalues """
-    sample = 50
-    neighbor = 200
+    sample = 20
+    neighbor = 20
     randidx = np.random.permutation(data.shape[0])[:sample]
     knbrs = NearestNeighbors(n_neighbors=neighbor,
                              algorithm='ball_tree').fit(data)
