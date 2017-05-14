@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """
 Use linear SVR to predict intrinsic dimensions of hand rotation sequence dataset
 """

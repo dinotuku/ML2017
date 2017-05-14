@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """
 Generate training data for linear SVR of hand rotation sequence dataset
 """
