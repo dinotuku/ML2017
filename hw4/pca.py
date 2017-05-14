@@ -75,6 +75,7 @@ def main():
     q1_faces_ctr = q1_faces - q1_faces_mean
     print('Perform SVD')
     _, eigenvalues, eigenfaces = np.linalg.svd(q1_faces_ctr)
+    print(eigenfaces.shape)
     print('Plot faces of q1')
     q1_plot_ave(q1_faces_mean)
     q1_plot_eig(eigenfaces[:9], eigenvalues[:9])
@@ -91,7 +92,7 @@ def main():
     # Q3
     print('Find the smallest number of eigenfaces')
     min_k = 0
-    for k in range(100):
+    for k in range(eigenfaces.shape[0]):
         q3_faces_prejected = np.matmul(q1_faces_ctr, eigenfaces[:k + 1].transpose())
         q3_faces_recovered = q1_faces_mean + np.matmul(q3_faces_prejected, eigenfaces[: k + 1])
         rmse = np.sqrt(np.mean((q3_faces_recovered / 256 - q1_faces / 256) ** 2))
