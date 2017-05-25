@@ -1,4 +1,10 @@
 data/
+glove.6B/
+log/
+tag/
+model/
 
+res.csv
+bag_res.csv
 Report.pages
-sample_submission.csv
+sample_submission_new.csv
