@@ -30,7 +30,8 @@ def main():
     args = parser.parse_args()
 
     test_text = read_dataset(args.input, 'test')
-    tok_file = open('./model/bag_tokenizer.pkl' if args.bag else './model/tokenizer.pkl', 'rb')
+    tok_file = open(os.path.join(MODEL_DIR, 'bag_tokenizer.pkl')
+                    if args.bag else os.path.join(MODEL_DIR, 'tokenizer.pkl'), 'rb')
     tokenizer = pickle.load(tok_file)
     tok_file.close()
     test_sequences = tokenizer.texts_to_sequences(test_text)
