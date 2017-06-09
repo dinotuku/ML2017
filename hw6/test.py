@@ -26,12 +26,12 @@ def main():
     args = parser.parse_args()
 
     pairs_df = pd.read_csv(os.path.join(args.input, 'test.csv'), sep=',')
-    print("{:d} user-movie pairs loaded".format(len(pairs_df)))
+    # print("{:d} user-movie pairs loaded".format(len(pairs_df)))
 
     users = pairs_df['UserID'].values - 1
-    print("Users: {:s}, shape = {:s}".format(str(users), str(users.shape)))
+    # print("Users: {:s}, shape = {:s}".format(str(users), str(users.shape)))
     movies = pairs_df['MovieID'].values - 1
-    print("Movies: {:s}, shape = {:s}".format(str(movies), str(movies.shape)))
+    # print("Movies: {:s}, shape = {:s}".format(str(movies), str(movies.shape)))
 
     model = load_model(os.path.join(MODEL_DIR, "{:s}_dnn_model.hdf5".format(args.model)
                                     if args.dnn else "{:s}_mf_model.hdf5".format(args.model)))
@@ -51,7 +51,7 @@ def main():
     file = open(args.output, 'w')
     file.write('TestDataID,Rating\n')
     for idx, item in enumerate(res):
-        file.write("{:d},{:.4f}\n".format(idx + 1, item))
+        file.write("{:d},{:.4f}\n".format(pairs_df['TestDataID'][idx], item))
 
 if __name__ == '__main__':
 
